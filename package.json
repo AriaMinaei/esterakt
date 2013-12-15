@@ -1,6 +1,6 @@
 {
   "name": "esterakt",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "WebGL Compatible Structs",
   "main": "scripts/js/lib/Esterakt.js",
   "scripts": {
