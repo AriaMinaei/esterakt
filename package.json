@@ -4,7 +4,8 @@
   "description": "WebGL Compatible Structs",
   "main": "scritps/js/lib/Esterakt.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "node ./node_modules/coffee-script/bin/cake build"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,11 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/AriaMinaei/esterakt/issues"
+  },
+  "dependencies": {
+    "utila": "~0.3.0-beta1"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.6.3"
   }
 }
