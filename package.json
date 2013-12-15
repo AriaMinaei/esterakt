@@ -1,0 +1,22 @@
+{
+  "name": "esterakt",
+  "version": "0.1.0",
+  "description": "WebGL Compatible Structs",
+  "main": "scritps/js/lib/Esterakt.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AriaMinaei/esterakt.git"
+  },
+  "keywords": [
+    "struct",
+    "webgl"
+  ],
+  "author": "Aria Minaei",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AriaMinaei/esterakt/issues"
+  }
+}
