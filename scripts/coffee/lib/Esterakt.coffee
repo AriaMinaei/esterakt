@@ -31,9 +31,12 @@ module.exports = class Esterakt
 
 		holders.__buffers = buffers = {}
 
+		holders.__uint8Views = uint8Views = {}
+
 		for name, cont of @_containers
 
-			buffers[name] = cont._makeBuffer count
+			buffers[name] = b = cont._makeBuffer count
+			uint8Views[name] = new Uint8Array b
 
 		containers = @_containers
 
