@@ -24,6 +24,6 @@
     "utila": "~0.3.0-beta1"
   },
   "devDependencies": {
-    "coffee-script": "~1.6.3"
+    "coffee-script": "~1.7.1"
   }
 }

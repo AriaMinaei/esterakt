@@ -1,22 +1,16 @@
-object = require 'utila/scripts/js/lib/object'
-
 module.exports = class Container
 
 	constructor: ->
 
-		@_floats = {}
+		@_names = {}
 
-		@_bytes = {}
+		@_params = {}
 
-		@_unsignedBytes = {}
+		for type in self._types
 
-		@_shorts = {}
+			[name] = type
 
-		@_unsignedShorts = {}
-
-		@_normalized = {}
-
-		@_defaults = {}
+			@_params[name] = []
 
 		@_prepared = no
 
@@ -42,27 +36,11 @@ module.exports = class Container
 
 			@_defaults[name] = defaults
 
+		else if defaults?
+
+			throw Error "`defaults` must be an array"
+
 		@
-
-	float: (name, size, defaults) ->
-
-		@_add '_floats', name, size, defaults
-
-	byte: (name, size, defaults, normalized) ->
-
-		@_add '_bytes', name, size, defaults, normalized
-
-	unsignedByte: (name, size, defaults, normalized) ->
-
-		@_add '_unsignedBytes', name, size, defaults, normalized
-
-	short: (name, size, defaults, normalized) ->
-
-		@_add '_shorts', name, size, defaults, normalized
-
-	unsignedShort: (name, size, defaults, normalized) ->
-
-		@_add '_unsignedShorts', name, size, defaults, normalized
 
 	_addEl: (glType, jsType, name, size, len, normalized, offset) ->
 
@@ -92,55 +70,35 @@ module.exports = class Container
 
 		offset = 0
 
-		# Floats
+		for type in self._types
 
-		for name, size of @_floats
+			[typeName, jsArray, glType] = type
 
-			@_addEl FLOAT, Float32Array,
+			for paramConfig in @_params[typeName]
 
-				name, size, (len = size * 4), no, offset
+				byteLength = paramConfig.size * jsArray.BYTES_PER_ELEMENT
 
-			offset += len
+				@_elements.push
 
-		# shorts
+					typeName: typeName
 
-		for name, size of @_shorts
+					glType: glType
 
-			@_addEl SHORT, Int16Array,
+					jsArray: jsArray
 
-				name, size, (len = size * 2), @_normalized[name]?, offset
+					name: paramConfig.name
 
-			offset += len
+					size: paramConfig.size
 
-		# unsigned shorts
+					byteLength: byteLength
 
-		for name, size of @_unsignedShorts
+					normalized: paramConfig.normalized
 
-			@_addEl UNSIGNED_SHORT, Uint16Array,
+					offset: offset
 
-				name, size, (len = size * 2), @_normalized[name]?, offset
+					defaults: paramConfig.defaults
 
-			offset += len
-
-		# bytes
-
-		for name, size of @_bytes
-
-			@_addEl BYTE, Int8Array,
-
-				name, size, (len = size * 1), @_normalized[name]?, offset
-
-			offset += len
-
-		# unsigned bytes
-
-		for name, size of @_unsignedBytes
-
-			@_addEl UNSIGNED_BYTE, Uint8Array,
-
-				name, size, (len = size * 1), @_normalized[name]?, offset
-
-			offset += len
+				offset += byteLength
 
 		offset = makeNumberMultipleOf offset, 4
 
@@ -168,26 +126,111 @@ module.exports = class Container
 
 		new ArrayBuffer @_stride * count
 
-	_putElementsIn: (holder, buffer, i) ->
+	_putElementsIn: (buffer, i, holder) ->
 
 		do @_prepare
 
 		for el in @_elements
 
-			holder[el.name] = p = new el.jsType buffer, el.offset + (@_stride * i), el.size
+			holder[el.name] = p = new el.jsArray buffer,
 
-			def = @_defaults[el.name]
+				el.offset + (@_stride * i), el.size
 
-			if def?
-
-				p.set def
+			p.set el.defaults if el.defaults?
 
 		return
+
+	@_types = []
+
+	@_defineType = (typeName, jsArray, glType, normalizable) ->
+
+		self._types.push Array::slice.call arguments, 0
+
+		self::[typeName] = (name, size, defaults, normalized) ->
+
+			# validate `name`
+			unless typeof name is 'string' and name.match /^[a-zA-Z0-9]+$/
+
+				throw Error "Invalid param name '#{name}'"
+
+			# make sure it doesn't already exist
+			if @_names[name]?
+
+				throw Error "Param name '#{name}' already exists"
+
+			# validate `size`
+			unless typeof size is 'number' and isFinite(size) and 0 < size
+
+				throw Error "Invalid param size '#{size}' for param '#{name}'"
+
+			# validate `defaults`
+			if Array.isArray defaults
+
+				if defaults.length isnt size
+
+					throw Error "Length of the `defaults` doesn't match elemen't size"
+
+			else if defaults?
+
+				throw Error "`defaults` must be an array"
+
+			# validate `normalized`
+			if normalizable and normalized?
+
+				if typeof normalized isnt 'boolean'
+
+					throw Error "Invalid `normalized` attribute for param '#{name}'"
+
+			else
+
+				normalized = no
+
+			@_params[typeName].push {name, size, defaults, normalized}
+
+			@_names[name] = yes
+
+			@
+
+		return
+
+	@_alias: (originalName, aliasName) ->
+
+		@::[aliasName] = ->
+
+			@[originalName].apply @, arguments
+
+	@_defineDefaultTypes: ->
+
+		{FLOAT, BYTE, UNSIGNED_BYTE, SHORT, UNSIGNED_SHORT} = WebGLRenderingContext
+
+		self._defineType 'double', Float64Array, null, no
+		self._alias 'double', 'float64'
+
+		self._defineType 'float', Float32Array, FLOAT, no
+		self._alias 'float', 'float32'
+
+		self._defineType 'long', Int32Array, null, no
+		self._alias 'long', 'int32'
+
+		self._defineType 'unsignedLong', Uint32Array, null, no
+		self._alias 'unsignedLong', 'uint32'
+
+		self._defineType 'short', Int16Array, SHORT, yes
+		self._alias 'short', 'int16'
+
+		self._defineType 'unsignedShort', Uint16Array, UNSIGNED_SHORT, yes
+		self._alias 'unsignedShort', 'uint16'
+
+		self._defineType 'byte', Int8Array, BYTE, yes
+		self._alias 'byte', 'int8'
+
+		self._defineType 'unsignedByte', Uint8Array, UNSIGNED_BYTE, yes
+		self._alias 'unsignedByte', 'uint8'
+
+	self = @
 
 makeNumberMultipleOf = (n, k) ->
 
 	Math.ceil(n / k) * k
 
-empty = (o) -> Object.keys(o).length is 0
-
-{FLOAT, BYTE, UNSIGNED_BYTE, SHORT, UNSIGNED_SHORT} = WebGLRenderingContext
+Container._defineDefaultTypes()

@@ -5,8 +5,15 @@ module.exports = class Esterakt
 
 	constructor: ->
 
+		# An Esterakt is just a collection of containers.
+		# Each container is configured with its own structure
+		# and its own separate buffer.
 		@_containers = {}
 
+	# Returns the container with the given name, defaults to the
+	# 'default' container.
+	#
+	# Creates a container if it doesn't exist.
 	getContainer: (name = 'default') ->
 
 		unless @_containers[name]?
@@ -15,11 +22,13 @@ module.exports = class Esterakt
 
 		@_containers[name]
 
+	# Returns all the containers
 	getContainers: ->
 
 		@_containers
 
-	makeParamHolders: (base, count) ->
+	# Generates the buffers for the given `count`.
+	generate: (count, base) ->
 
 		count = parseInt count
 
@@ -46,7 +55,7 @@ module.exports = class Esterakt
 
 			for name, cont of containers
 
-				cont._putElementsIn holder, buffers[name], i
+				cont._putElementsIn buffers[name], i, holder
 
 			holders.push holder
 
