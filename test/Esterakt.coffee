@@ -1,5 +1,6 @@
 Esterakt = require '../src/Esterakt'
-{ClassType, Float32, List} = Esterakt
+{ClassType, Float32Type, List} = Esterakt
+ClassType = require '../src/ClassType'
 
 describe 'Esterakt', ->
 
@@ -7,9 +8,9 @@ describe 'Esterakt', ->
 
 		PointType = new ClassType class Point
 
-			$x: Float32
-			$y: Float32
-			$z: Float32
+			$x: Float32Type
+			$y: Float32Type
+			$z: Float32Type
 
 			put: (x, y, z) ->
 
@@ -19,14 +20,14 @@ describe 'Esterakt', ->
 
 				this
 
-		points = new List(PointType, 20)
+		points = new List(PointType, 2)
 
-		points.length.should.equal 20
+		points.length.should.equal 2
 
-		p = points.get 10
+		p = points.get 1
 
 		p.x.should.equal 0
-
-		p.put 10, 20, 30
-
+		p.x = 10
 		p.x.should.equal 10
+
+		points.get(1).x.should.equal 10
