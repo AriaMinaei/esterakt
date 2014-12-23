@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha \"test/**/*.coffee\"",
     "prepublish": "coffee --bare --compile --output ./lib ./src",
-    "winwatch": "mocha \"test/**/*.coffee\" --watch"
+    "winwatch": "start/b jitter src lib -b && mocha \"test/**/*.coffee\" --watch"
   },
   "repository": {
     "type": "git",

@@ -6,28 +6,30 @@ describe 'Esterakt', ->
 
 	describe "general", ->
 
-		PointType = new ClassType class Point
+		it "should work", ->
 
-			$x: Float32Type
-			$y: Float32Type
-			$z: Float32Type
+			PointType = new ClassType class Point
 
-			put: (x, y, z) ->
+				$x: Float32Type
+				$y: Float32Type
+				$z: Float32Type
 
-				@x = +x
-				@y = +y
-				@z = +z
+				put: (x, y, z) ->
 
-				this
+					@x = +x
+					@y = +y
+					@z = +z
 
-		points = new List(PointType, 2)
+					this
 
-		points.length.should.equal 2
+			points = new List(PointType, 2)
 
-		p = points.get 1
+			points.getLength().should.equal 2
 
-		p.x.should.equal 0
-		p.x = 10
-		p.x.should.equal 10
+			p = points.get 1
 
-		points.get(1).x.should.equal 10
+			p.x.should.equal 0
+			p.x = 10
+			p.x.should.equal 10
+
+			points.get(1).x.should.equal 10

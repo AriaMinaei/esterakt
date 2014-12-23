@@ -2,7 +2,7 @@ module.exports = class ClassType
 
 	constructor: (@_class) ->
 
-		@_props = {}
+		@_propDescriptors = {}
 
 		do @_findProps
 
@@ -18,8 +18,8 @@ module.exports = class ClassType
 
 	_addProp: (name, v) ->
 
-		@_props[name] = v
+		@_propDescriptors[name] = v
 
-	_getProps: ->
+	getPropDescriptors: ->
 
-		@_props
+		@_propDescriptors

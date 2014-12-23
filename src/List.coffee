@@ -1,73 +1,91 @@
+ListBuffer = require './list/ListBuffer'
+ListProp = require './list/ListProp'
+
 module.exports = class List
 
-	constructor: (type, length) ->
+	constructor: (classType, length) ->
 
+		@_propsByName = {}
+		@_propsByBytesPerElement = {1: {}, 2:{}, 4:{}, 8:{}}
 		@_stride = 0
 
-		@_props = type._getProps()
+		@_classType = classType
 
-		do @_calculateStride
+		@_useProps classType.getPropDescriptors()
 
-		@_length = 0
+		do @_fixStride
 
-		@_setLength length
+		@setLength length
 
 		do @_createClass
 
-	_calculateStride: ->
+	_useProps: (descriptors) ->
 
-		stride = 0
+		for name, descriptor of descriptors
 
-		for name, prop of @_props
+			@_addProp name, descriptor
 
-			stride += prop.byteLength
+		return
 
-		@_stride = makeNumberMultipleOf stride, 4
+	_addProp: (name, descriptor) ->
 
-	_setLength: (length) ->
+		@_stride += descriptor.byteLength
 
-		@_byteLength = length * @_stride
+		listProp = new ListProp this, name, descriptor
+
+		@_propsByBytesPerElement[descriptor.bytesPerElement][name] = listProp
+
+		@_propsByName[name] = listProp
+
+		return
+
+	_fixStride: ->
+
+		@_stride = makeNumberMultipleOf @_stride, 4
+
+	getLength: ->
+
+		@_length
+
+	setLength: (length) ->
 
 		@_length = length
 
-		@_buffer = new ArrayBuffer @_byteLength
-		@_float32Array = new Float32Array @_buffer
+		byteLength = length * @_stride
 
-	Object.defineProperty @::, "length",
+		unless @_listBuffer?
 
-		get: -> @_length
+			@_listBuffer = new ListBuffer byteLength
+
+		else
+
+			@_listBuffer.setByteLength byteLength
+
+		this
 
 	_createClass: ->
 
-		class ListClass
+		class ListClass extends @_classType._class
 
 			constructor: (@_esteraktList, @_esteraktIndex) ->
 
-		curOffset = 0
-
-		for name, prop of @_props
-
-			if prop.typedArray is 'Float32Array'
-
-				stride = @_stride / 4
-				offset = curOffset / 4
-
-				curOffset += 4
-
-				typedArrayProp = "_float32Array"
-
-			accessor = "this._esteraktList.#{typedArrayProp}[#{stride} * this._esteraktIndex + #{offset}]"
-
-			evalString =
-
-			eval "function getter(){ return #{accessor}; }"
-
-			eval "function setter(v){ #{accessor} = v; }"
-
-
-			Object.defineProperty ListClass::, name, get: getter, set: setter
+				super
 
 		@_class = ListClass
+
+		do @_addPropsToClass
+
+	_addPropsToClass: ->
+
+		curByteOffset = 0
+
+		for _, props of @_propsByBytesPerElement
+
+			for name, listProp of props
+
+				listProp.setupSettersAndGettersOnClass @_class, @_stride, curByteOffset
+
+				curByteOffset += listProp.descriptor.byteLength
 
 		return
 
