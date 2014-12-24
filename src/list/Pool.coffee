@@ -1,10 +1,20 @@
 module.exports = class Pool
 
-	constructor: (@list) ->
+	constructor: (@list, initializer) ->
 
 		@_allObjects = []
 		@_reserves = []
 		@_reservesCount = 0
+
+		if initializer?
+
+			@_initializer = initializer
+
+		else
+
+			@_initializer = (cls, arg1, arg2) ->
+
+				new cls arg1, arg2
 
 	get: (i) ->
 
@@ -22,7 +32,7 @@ module.exports = class Pool
 
 	_create: (i) ->
 
-		obj = new @list._class @list, i
+		obj = @_initializer @list._class, @list, i
 
 		@_allObjects.push obj
 

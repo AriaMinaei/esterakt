@@ -14,6 +14,14 @@ describe 'Esterakt', ->
 				$y: Float32Type
 				$z: Float32Type
 
+				# $rotation:
+
+				# 	$x: Float32Type
+				# 	$y: Float32Type
+				# 	$z: Float32Type
+
+				constructor: (_, __, @theThing) ->
+
 				put: (x, y, z) ->
 
 					@x = +x
@@ -22,7 +30,9 @@ describe 'Esterakt', ->
 
 					this
 
-			points = new List(PointType, 2)
+			points = new List PointType, 2, (cls, arg1, arg2) ->
+
+				new cls arg1, arg2, 'something'
 
 			points.getLength().should.equal 2
 
@@ -31,6 +41,8 @@ describe 'Esterakt', ->
 			p.x.should.equal 0
 			p.x = 10
 			p.x.should.equal 10
+
+			p.theThing.should.equal 'something'
 
 			points.get(1).x.should.equal 10
 

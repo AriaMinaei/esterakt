@@ -5,8 +5,15 @@
   "main": "lib/Esterakt.js",
   "scripts": {
     "test": "mocha \"test/**/*.coffee\"",
-    "prepublish": "coffee --bare --compile --output ./lib ./src",
-    "winwatch": "start/b jitter src lib -b && mocha \"test/**/*.coffee\" --watch"
+    "test:watch": "mocha \"test/**/*.coffee\" --watch",
+
+    "compile": "coffee --bare --compile --output ./lib ./src",
+    "compile:watch": "jitter src lib -b",
+
+    "watch": "npm run compile:watch & npm run test:watch",
+    "winwatch": "start/b npm run compile:watch & npm run test:watch",
+
+    "prepublish": "npm run compile"
   },
   "repository": {
     "type": "git",

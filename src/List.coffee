@@ -4,7 +4,7 @@ Pool = require './list/Pool'
 
 module.exports = class List
 
-	constructor: (classType, length) ->
+	constructor: (classType, length, initializer) ->
 
 		@_propsByName = {}
 		@_propsByBytesPerElement = {1: {}, 2:{}, 4:{}, 8:{}}
@@ -20,7 +20,7 @@ module.exports = class List
 
 		do @_createClass
 
-		@_pool = new Pool this
+		@_pool = new Pool this, initializer
 
 	_useProps: (descriptors) ->
 
