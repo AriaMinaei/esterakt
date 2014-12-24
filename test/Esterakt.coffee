@@ -33,3 +33,7 @@ describe 'Esterakt', ->
 			p.x.should.equal 10
 
 			points.get(1).x.should.equal 10
+
+			points.take p
+
+			points.get(0).should.equal p

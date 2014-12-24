@@ -1,5 +1,6 @@
 ListBuffer = require './list/ListBuffer'
 ListProp = require './list/ListProp'
+Pool = require './list/Pool'
 
 module.exports = class List
 
@@ -18,6 +19,8 @@ module.exports = class List
 		@setLength length
 
 		do @_createClass
+
+		@_pool = new Pool this
 
 	_useProps: (descriptors) ->
 
@@ -71,6 +74,8 @@ module.exports = class List
 
 				super
 
+			_setEsteraktIndex: (@_esteraktIndex) ->
+
 		@_class = ListClass
 
 		do @_addPropsToClass
@@ -91,7 +96,13 @@ module.exports = class List
 
 	get: (i) ->
 
-		new @_class this, i
+		@_pool.get i
+
+	take: (obj) ->
+
+		@_pool.take obj
+
+		this
 
 makeNumberMultipleOf = (n, k) ->
 
