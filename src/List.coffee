@@ -32,7 +32,7 @@ module.exports = class List
 
 	_addProp: (name, descriptor) ->
 
-		@_stride += descriptor.byteLength
+		@_stride += descriptor.bytesPerElement
 
 		listProp = new ListProp this, name, descriptor
 
@@ -44,7 +44,17 @@ module.exports = class List
 
 	_fixStride: ->
 
-		@_stride = makeNumberMultipleOf @_stride, 4
+		biggestByteLength = 0
+
+		for name in Object.keys(@_propsByBytesPerElement) by -1
+
+			if Object.keys(@_propsByBytesPerElement[name]).length > 0
+
+				biggestByteLength = parseInt name
+
+				break
+
+		@_stride = makeNumberMultipleOf @_stride, biggestByteLength
 
 	getLength: ->
 

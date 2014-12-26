@@ -1,5 +1,5 @@
 Esterakt = require '../src/Esterakt'
-{ClassType, Float32Type, List} = Esterakt
+{ClassType, Float32Type, Float64Type, List} = Esterakt
 ClassType = require '../src/ClassType'
 
 describe 'Esterakt', ->
@@ -12,7 +12,7 @@ describe 'Esterakt', ->
 
 				$x: Float32Type
 				$y: Float32Type
-				$z: Float32Type
+				$z: Float64Type
 
 				# $rotation:
 
@@ -49,3 +49,6 @@ describe 'Esterakt', ->
 			points.take p
 
 			points.get(0).should.equal p
+
+			p.z = 10
+			p.z.should.equal 10
