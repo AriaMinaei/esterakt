@@ -1,5 +1,5 @@
 Esterakt = require '../src/Esterakt'
-{Float32Type, Float64Type, List} = Esterakt
+{List, types} = Esterakt
 
 describe 'Esterakt', ->
 
@@ -9,9 +9,9 @@ describe 'Esterakt', ->
 
 			class Point
 
-				$x: Float32Type
-				$y: Float32Type
-				$z: Float64Type
+				$x: types.Float32
+				$y: types.Float32
+				$z: types.Float64
 
 				constructor: (_, __, @theThing) ->
 

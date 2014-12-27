@@ -1,9 +1,4 @@
-module.exports = class Esterakt
-
-	constructor: ->
+module.exports = Esterakt = {}
 
 Esterakt.List = require './List'
-
-for name, val of require './basicTypes'
-
-	Esterakt[name] = val
+Esterakt.types = require './types'

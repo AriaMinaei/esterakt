@@ -1,41 +1,41 @@
 types = {}
 
-types.Int32Type = class Int32Type
+types.Int32 = class Int32
 
 	@bytesPerElement: 4
 	@typedArray: Int32Array
 
-types.Uint32Type = class Uint32Type
+types.Uint32 = class Uint32
 
 	@bytesPerElement: 4
 	@typedArray: Uint32Array
 
-types.Int16Type = class Int16Type
+types.Int16 = class Int16
 
 	@bytesPerElement: 2
 	@typedArray: Int16Array
 
-types.Uint16Type = class Uint16Type
+types.Uint16 = class Uint16
 
 	@bytesPerElement: 2
 	@typedArray: Uint16Array
 
-types.Int8Type = class Int8Type
+types.Int8 = class Int8
 
 	@bytesPerElement: 1
 	@typedArray: Int8Array
 
-types.Uint8Type = class Uint8Type
+types.Uint8 = class Uint8
 
 	@bytesPerElement: 1
 	@typedArray: Uint8Array
 
-types.Float32Type = class Float32Type
+types.Float32 = class Float32
 
 	@bytesPerElement: 4
 	@typedArray: Float32Array
 
-types.Float64Type = class Float64Type
+types.Float64 = class Float64
 
 	@bytesPerElement: 8
 	@typedArray: Float64Array

@@ -8,7 +8,7 @@ module.exports = class List
 
 		new List cls, length, initializer
 
-	constructor: (@_class, length, initializer) ->
+	constructor: (@_baseClass, length, initializer) ->
 
 		@_propsByName = {}
 		@_propsByBytesPerElement = {1: {}, 2:{}, 4:{}, 8:{}}
@@ -26,11 +26,13 @@ module.exports = class List
 
 	_extractProps: ->
 
-		for name, value of @_class::
+		for name, value of @_baseClass::
 
 			continue unless name.match /^\$/
 
 			@_addProp name.substr(1, name.length), value
+
+		return
 
 	_addProp: (name, descriptor) ->
 
@@ -80,7 +82,7 @@ module.exports = class List
 
 	_createClass: ->
 
-		class ListClass extends @_class
+		class ListClass extends @_baseClass
 
 			constructor: (@_esteraktList, @_esteraktIndex) ->
 
@@ -96,13 +98,17 @@ module.exports = class List
 
 		curByteOffset = 0
 
-		for _, props of @_propsByBytesPerElement
+		for bytesPerElement in Object.keys(@_propsByBytesPerElement) by -1
+
+			props = @_propsByBytesPerElement[bytesPerElement]
+
+			bytesPerElement = parseInt bytesPerElement
 
 			for name, listProp of props
 
 				listProp.setupSettersAndGettersOnClass @_class, @_stride, curByteOffset
 
-				curByteOffset += listProp.descriptor.byteLength
+				curByteOffset += bytesPerElement
 
 		return
 
