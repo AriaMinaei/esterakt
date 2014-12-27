@@ -1,6 +1,5 @@
 Esterakt = require '../src/Esterakt'
-{ClassType, Float32Type, Float64Type, List} = Esterakt
-ClassType = require '../src/ClassType'
+{Float32Type, Float64Type, List} = Esterakt
 
 describe 'Esterakt', ->
 
@@ -8,17 +7,11 @@ describe 'Esterakt', ->
 
 		it "should work", ->
 
-			PointType = new ClassType class Point
+			class Point
 
 				$x: Float32Type
 				$y: Float32Type
 				$z: Float64Type
-
-				# $rotation:
-
-				# 	$x: Float32Type
-				# 	$y: Float32Type
-				# 	$z: Float32Type
 
 				constructor: (_, __, @theThing) ->
 
@@ -30,7 +23,7 @@ describe 'Esterakt', ->
 
 					this
 
-			points = new List PointType, 2, (cls, arg1, arg2) ->
+			points = List.of Point, 2, (cls, arg1, arg2) ->
 
 				new cls arg1, arg2, 'something'
 

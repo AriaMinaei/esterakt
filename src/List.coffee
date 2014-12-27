@@ -4,15 +4,17 @@ Pool = require './list/Pool'
 
 module.exports = class List
 
-	constructor: (classType, length, initializer) ->
+	@of: (cls, length, initializer) ->
+
+		new List cls, length, initializer
+
+	constructor: (@_class, length, initializer) ->
 
 		@_propsByName = {}
 		@_propsByBytesPerElement = {1: {}, 2:{}, 4:{}, 8:{}}
 		@_stride = 0
 
-		@_classType = classType
-
-		@_useProps classType.getPropDescriptors()
+		do @_extractProps
 
 		do @_fixStride
 
@@ -22,13 +24,13 @@ module.exports = class List
 
 		@_pool = new Pool this, initializer
 
-	_useProps: (descriptors) ->
+	_extractProps: ->
 
-		for name, descriptor of descriptors
+		for name, value of @_class::
 
-			@_addProp name, descriptor
+			continue unless name.match /^\$/
 
-		return
+			@_addProp name.substr(1, name.length), value
 
 	_addProp: (name, descriptor) ->
 
@@ -78,7 +80,7 @@ module.exports = class List
 
 	_createClass: ->
 
-		class ListClass extends @_classType._class
+		class ListClass extends @_class
 
 			constructor: (@_esteraktList, @_esteraktIndex) ->
 
