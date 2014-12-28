@@ -17,4 +17,4 @@ module.exports = class ListProp
 
 		eval "function setter(v){ #{accessor} = v; }"
 
-		Object.defineProperty cls::, @name, get: getter, set: setter
+		Object.defineProperty cls.prototype, @name, get: getter, set: setter
