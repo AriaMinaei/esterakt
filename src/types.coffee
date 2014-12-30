@@ -40,4 +40,8 @@ types.Float64 = class Float64
 	@bytesPerElement: 8
 	@typedArray: Float64Array
 
+types.Boolean = class BooleanType
+
+	@isBoolean: yes
+
 module.exports = types

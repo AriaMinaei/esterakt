@@ -1,5 +1,6 @@
 ListBuffer = require './list/ListBuffer'
 ListProp = require './list/ListProp'
+BitListProp = require './list/BitListProp'
 Pool = require './list/Pool'
 
 module.exports = class List
@@ -13,6 +14,9 @@ module.exports = class List
 		@_propsByName = {}
 		@_propsByBytesPerElement = {1: {}, 2:{}, 4:{}, 8:{}}
 		@_stride = 0
+		@_bitProps = {}
+
+		@_hasBits = no
 
 		do @_extractProps
 
@@ -36,6 +40,10 @@ module.exports = class List
 
 	_addProp: (name, descriptor) ->
 
+		if descriptor.isBoolean
+
+			return @_addBooleanProp name, descriptor
+
 		@_stride += descriptor.bytesPerElement
 
 		listProp = new ListProp this, name, descriptor
@@ -45,6 +53,15 @@ module.exports = class List
 		@_propsByName[name] = listProp
 
 		return
+
+	_addBooleanProp: (name, descriptor) ->
+
+		@_hasBits = yes
+
+		listProp = new BitListProp this, name, descriptor
+
+		@_propsByName[name] = listProp
+		@_bitProps[name] = listProp
 
 	_fixStride: ->
 
@@ -57,6 +74,8 @@ module.exports = class List
 				biggestByteLength = parseInt name
 
 				break
+
+		if @_hasBits then @_stride += 4
 
 		@_stride = makeNumberMultipleOf @_stride, biggestByteLength
 
@@ -109,6 +128,14 @@ module.exports = class List
 				listProp.setupSettersAndGettersOnClass @_class, @_stride, curByteOffset
 
 				curByteOffset += bytesPerElement
+
+		i = 0
+
+		for name, listProp of @_bitProps
+
+			listProp.setupSettersAndGettersOnClass @_class, @_stride, curByteOffset, i
+
+			i++
 
 		return
 
